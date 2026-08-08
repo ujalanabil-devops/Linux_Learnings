@@ -101,9 +101,14 @@ Then copy all three files to backup/.
 Create a realistic log:
 cd ~/linux-labs/project
 
+#!/bin/bash
 for i in {1..100}; do
     echo "$(date '+%Y-%m-%d %H:%M:%S') INFO Request processed ID=$i" >> logs/app.log
 done
+
+for i in {1..100}; do ==== generates the sequence 1, 2, 3, …, 100
+date '+%Y-%m-%d %H:%M:%S' ===== Prints the current timestamp in a clean, log‑friendly format
+echo "$( ... ) INFO Request processed ID=$i" ===== Constructs a log line containing
 
 Add errors:
 echo "ERROR Database connection failed" >> logs/app.log
