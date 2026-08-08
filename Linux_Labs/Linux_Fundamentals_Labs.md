@@ -2,6 +2,8 @@
 ```
 mkdir -p ~/linux-labs
 cd ~/linux-labs
+-p — “parents”; prevents errors if the directory already exists and creates any missing parent directories.
+~ is your home directory (e.g., /home/nabil)
 ```
 ### Lab 1 — Filesystem Exploration
 - Objective:Understand the Linux filesystem hierarchy.
