@@ -151,10 +151,10 @@ Count:
 grep -c "ERROR" logs/app.log
 
 Search multiple patterns:
-grep -Ei "error|warning" logs/app.log (- E = Extended Regular Expressions,No escaping needed).
+grep -Ei "error|warning" logs/app.log (-E = Extended Regular Expressions,No escaping needed).
 
 Invert:
-grep -v "INFO" logs/app.log
+grep -v "INFO" logs/app.log (-v = all lines that do NOT contain the word “INFO”.
 
 Production challenge
 Find:
@@ -173,7 +173,7 @@ Then:
 grep ERROR logs/app.log | tail -5
 
 Then:
-grep ERROR logs/app.log | wc -l
+grep ERROR logs/app.log | wc -l (wc -l = Count how many lines).
 
 Try:
 ls -lah /var/log | grep log
@@ -241,6 +241,8 @@ find data -type d
 
 Find files modified within the last day:
 find data -type f -mtime -1
+find data -type f -mmin -60 (last hr)
+find data -type f -mtime 1 (exact one day)
 
 Production challenge
 Find all .log files under your lab directory:
