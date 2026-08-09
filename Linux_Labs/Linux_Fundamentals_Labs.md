@@ -151,7 +151,7 @@ Count:
 grep -c "ERROR" logs/app.log
 
 Search multiple patterns:
-grep -Ei "error|warning" logs/app.log
+grep -Ei "error|warning" logs/app.log (- E = Extended Regular Expressions,No escaping needed).
 
 Invert:
 grep -v "INFO" logs/app.log
