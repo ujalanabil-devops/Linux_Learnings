@@ -303,6 +303,8 @@ grep ERROR logs/app.log | sort | uniq -c | sort -nr
 ```
 Practice with /etc/passwd:
 cut -d: -f1 /etc/passwd
+-d: = Sets the delimiter to a colon :
+-f1 = Select field 1 → the username.
 
 Get username and shell:
 cut -d: -f1,7 /etc/passwd
@@ -332,6 +334,9 @@ EOF
 
 Practice safely:
 cat files.txt | xargs -n1 echo
+cat files.txt =  Outputs the contents of files.txt, line by line.
+xargs = Takes input from cat and builds commands from it.
+-n1 = Run the command once per item, Each line becomes a separate echo command.
 
 Create files:
 touch file1.txt file2.txt file3.txt
@@ -418,7 +423,12 @@ Remove: unset APP_PORT
 
 Verify:
 echo "$APP_PORT"
-Lab 16 — PATH Troubleshooting
+
+All environment variables = printenv or env
+All variables (env + shell) = set
+
+## Lab 16 — PATH Troubleshooting
+- PATH is an environment variable that tells Linux where to look for executable commands.
 
 Create a script:
 mkdir -p ~/linux-labs/bin
@@ -445,6 +455,9 @@ echo "$PATH"
 
 Temporarily add it:
 export PATH="$HOME/linux-labs/bin:$PATH"
+
+$HOME/linux-labs/bin ==== This is your custom folder where you keep scripts or tools.
+:$PATH ==== This appends the existing PATH after your new directory.
 
 Now:
 hello-devops
