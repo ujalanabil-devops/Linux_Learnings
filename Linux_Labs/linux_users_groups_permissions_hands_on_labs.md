@@ -99,6 +99,21 @@ useradd -m alice
 useradd -m bob
 useradd -m appuser
 useradd -m monitoring
+where,
+-m == creates a new user AND creates their home directory
+* Without -m, the user is created but no home directory is created, which causes problems for SSH, scripts, and login shells.
+
+Debugging Scenario
+* A user cannot SSH into a server even though their password is correct.
+Root cause:
+Their home directory does not exist → SSH cannot create .ssh/authorized_keys.
+Fix:
+sudo mkdir /home/username
+sudo chown username:username /home/username
+or
+sudo userdel username
+sudo useradd -m username
+
 ```
 
 Verify:
@@ -162,6 +177,9 @@ Useful commands:
 ```bash
 id alice
 getent passwd alice
+
+* getent = “get entries” from system databases (passwd, group, hosts, etc.).
+* getent returns users from all identity sources(local Linux user, LDAP user, Active Directory user, NIS user) not just local accounts.
 ```
 
 ---
@@ -182,6 +200,8 @@ Find Alice:
 
 ```bash
 grep '^alice:' /etc/passwd
+^ = beginning of line
+alice: = username followed by a colon (the passwd format)
 ```
 
 Preferred lookup:
@@ -274,6 +294,24 @@ Check password status:
 
 ```bash
 passwd -S alice
+
+output:-
+alice P 08/13/2026 0 99999 7
+where,
+P → password is set
+password last changed on 08/13/2026
+password aging rules follow (min/max days, warning days)
+
+What does the “L” or “P” in passwd -S username mean?
+Expected answer:
+P → password is set
+L → account is locked
+NP → no password set
+LK → locked via usermod -L or passwd -l
+
+Confusing password expiration with account locking.
+expired password → user must change password
+locked account → user cannot log in at all
 ```
 
 Check password aging:
@@ -282,14 +320,60 @@ Check password aging:
 chage -l alice
 ```
 
-## Exercise — Lock and Unlock
+## Exercise — Lock,Unlock,change password,
 
-Lock:
+Change Password:
+```
+sudo passwd alice
+```
+Set Password Aging (expiry rules):
+```
+View current aging: sudo chage -l alice
+Set password to expire every 90 days: sudo chage -M 90 alice
+Force user to change password at next login: sudo chage -d 0 alice
+Set minimum days between password changes (e.g., 1 day): sudo chage -m 1 alice
+Set warning period before expiry (e.g., 7 days): sudo chage -W 7 alice
+
+Note: Setting -M 0 → password expires immediately → user locked out.
+```
+
+Password Expire vs Account Expire:
+If the password expires: user can still log in, but they are forced to change their password immediately,SSH may deny login if password change on login .
+If the account expires: user cannot log in at all, even with the correct password, even with SSH keys, even if password is valid.
+```
+sudo chage -E 2026-12-31 alice
+active expire account: sudo chage -E -1 alice (-1 means “never expire”)
+```
+Remove a Password (make account passwordless):
+```
+sudo passwd -d alice
+
+Real‑world use case: Service accounts that should never have a password.
+```
+Password inactive:
+First → password expires
+Then → user has X “inactive days”
+After X days → account becomes fully locked
+
+example:
+Password expires on Aug 10
+Password inactive = 7 days
+Aug 10: Password expired → user must change password
+Aug 11–17: Password inactive period → user can still log in only to change password
+Aug 18: Account locked → user cannot log in at all
+```
+set password inactive days: sudo chage -I 7 alice
+remove password inactive period: sudo chage -I -1 alice
+```
+
+Disable a Password (lock the account):
 
 ```bash
 passwd -l alice
-```
 
+Adds ! in front of the password hash in /etc/shadow.
+User cannot log in, even with the correct password.
+```
 Check:
 
 ```bash
@@ -346,6 +430,11 @@ usermod -aG developers alice
 usermod -aG developers bob
 
 usermod -aG appgroup appuser
+
+where,
+-a → append (add without removing existing groups)
+-G devops → add user to the devops supplementary group
+alice → the username
 ```
 
 Verify:
@@ -439,20 +528,30 @@ Compare:
 
 ```bash
 su appuser
+
+Switches to the user appuser
+Keeps your current environment
+Does NOT load:
+.bashrc
+.profile
+.bash_profile
+user’s PATH
+user’s environment variables
 ```
 
 with:
 
 ```bash
 su - appuser
+Simulates a real login as appuser
+
+Loads:
+/etc/profile
+~appuser/.bash_profile
+~appuser/.profile
+~appuser/.bashrc
+Sets correct:PATH,HOME,SHELL,environment variables
 ```
-
-## Challenge
-
-Explain why `su - appuser` provides a more complete login environment.
-
----
-
 # Lab 6 — `sudo`
 
 ## Objective
