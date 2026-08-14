@@ -562,12 +562,20 @@ Check your sudo permissions:
 
 ```bash
 sudo -l
+it shows:-
+* which commands you can run with sudo.
+* whether you need a password.
+* which hosts the rules apply to
+* whether you have NOPASSWD privileges.
+* whether you have full root access
 ```
 
 Test:
 
 ```bash
 sudo whoami
+
+"who you become when running a command with sudo."
 ```
 
 Expected:
@@ -585,7 +593,17 @@ sudo id
 Run a command as another user:
 
 ```bash
+“Run the command whoami as appuser, using sudo.”
+
 sudo -u appuser whoami
+
+* runs only that command as appuser
+* does not switch your shell
+* does not ask for appuser’s password
+* requires your sudo permissions, not appuser’s
+
+* used in production: to ensure: permissions are correct,environment variables are correct,the app behaves the same way it does under systemd.
+
 ```
 
 Expected:
@@ -593,21 +611,6 @@ Expected:
 ```text
 appuser
 ```
-
-## Challenge
-
-Explain the difference between:
-
-```bash
-sudo whoami
-```
-
-and:
-
-```bash
-sudo -u appuser whoami
-```
-
 ## Production note
 
 Prefer narrowly scoped `sudo` commands over permanently working as root.
@@ -626,6 +629,13 @@ Change shell:
 
 ```bash
 usermod -s /bin/bash testuser
+
+Changing the shell is necessary when:
+* A user cannot log in because their shell is set to /usr/sbin/nologin or /bin/false
+* You want a service account to run interactive commands
+* You want to enable scripting for a user
+* You need to fix a misconfigured shell after a migration
+
 ```
 
 Add to group:
@@ -653,10 +663,16 @@ Unlock:
 usermod -U testuser
 ```
 
-Delete:
+Delete without home directory:
 
 ```bash
 userdel testuser
+
+Access the directory as root: ls -la /home/testuser
+change ownership: sudo chown -R $USER:$USER /home/testuser
+Copy files: sudo cp -r /home/testuser /backup/
+Move files: sudo mv /home/testuser /home/newuser/
+Archive: sudo tar czf testuser_backup.tar.gz /home/testuser
 ```
 
 Check:
@@ -799,21 +815,6 @@ Verify:
 
 ```bash
 ls -l test*
-```
-
-## Challenge
-
-Before executing the commands, calculate:
-
-```text
-7 = ?
-6 = ?
-5 = ?
-4 = ?
-3 = ?
-2 = ?
-1 = ?
-0 = ?
 ```
 
 ---
