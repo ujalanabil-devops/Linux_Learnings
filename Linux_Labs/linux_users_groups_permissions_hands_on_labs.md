@@ -1253,6 +1253,8 @@ SGID = newly created files/directories inherit the directory's group
 ---
 
 # Lab 17 — Sticky Bit
+- used mainly on shared directories to prevent users from deleting each other’s files.
+- Only the file’s owner, the directory’s owner, or root can delete or rename files inside it.
 
 ## Objective
 
