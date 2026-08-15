@@ -1260,17 +1260,30 @@ SGID = newly created files/directories inherit the directory's group
 
 Protect files in a shared writable directory.
 
-Create:
+Create and test without sticky bit:-
 
 ```bash
-mkdir /opt/devops-lab/dropbox
+sudo mkdir /opt/sticky-lab (create directory)
+sudo chmod 777 /opt/sticky-lab (give full permission)
+sudo -u user1 touch /opt/sticky-lab/file1.txt (create file with user1)
+ls -l /opt/sticky-lab (check the status)
+sudo -u user2 rm /opt/sticky-lab/file1.txt (try to delete file with user2, you can delete file)
+
 chmod 1777 /opt/devops-lab/dropbox
 ```
 
-Check:
+Create and test with sticky bit:-
 
 ```bash
-ls -ld /opt/devops-lab/dropbox
+sudo mkdir /opt/sticky-lab (create directory)
+sudo chmod 777 /opt/sticky-lab (give full permission)
+sudo chmod +t /opt/sticky-lab (enable sticky bit by +t or 1777)
+ls -ld /opt/sticky-lab ( check status)
+sudo -u user1 touch /opt/sticky-lab/file1.txt (create file with user1)
+ls -l /opt/sticky-lab (check the status)
+sudo -u user2 rm /opt/sticky-lab/file1.txt (try to delete file with user2, you cannot delete file)
+sudo -u user1 rm /opt/sticky-lab/file1.txt(try to delete file with user1, owner can delete file)
+
 ```
 
 Expected:
@@ -1278,21 +1291,6 @@ Expected:
 ```text
 drwxrwxrwt
 ```
-
-Create Alice's file:
-
-```bash
-sudo -u alice touch /opt/devops-lab/dropbox/alice.txt
-```
-
-Try deleting as Bob:
-
-```bash
-sudo -u bob rm /opt/devops-lab/dropbox/alice.txt
-```
-
-Normally this should fail.
-
 ## Key Concept
 
 ```text
