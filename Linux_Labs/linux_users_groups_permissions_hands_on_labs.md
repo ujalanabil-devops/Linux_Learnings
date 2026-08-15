@@ -984,6 +984,10 @@ Create a file as appuser:
 
 ```bash
 sudo -u appuser touch /opt/devops-lab/shared/app.txt
+
+if you get permission denied:
+even though you are ussing sudo -u appuser ,the appuser account needs execute(x) permission on every parent directory.
+check permission : namei -l /opt/devops-lab/shared/app.txt
 ```
 
 Check:
