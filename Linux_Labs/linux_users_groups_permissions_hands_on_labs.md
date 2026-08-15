@@ -1107,21 +1107,59 @@ Always identify:
 ---
 
 # Lab 15 — SUID
-
+- SUID (Set‑User‑ID) is a special Linux permission bit that makes a program run with the file owner’s privileges, not the privileges of the user who launched it.
 ## Objective
 
 Understand SUID.
+When a file has the SUID bit set:
+Any user who runs that program
+Temporarily becomes the file owner (usually root)
+Only for the duration of that program
 
-Find SUID binaries:
+Why SUID exists:
+Some tasks require elevated privileges, but you don’t want to give users full root access.
+Examples:
+passwd → needs root to modify /etc/shadow
+ping → needs raw socket access
+sudo → needs root to escalate privileges
+SUID should never be set on scripts
+SUID should be avoided unless absolutely necessary
 
 ```bash
 find /usr/bin -perm -4000 -type f 2>/dev/null
+
+1. /usr/bin: Search only inside the /usr/bin directory.
+2. -perm -4000: Match files with the SUID bit set.4 = SUID,000 = other permission bits,-4000 = “file has SUID bit ON”
+3. -type f: Only show regular files, not directories.
+4. 2>/dev/null: Hide error messages (like “permission denied”) by redirecting stderr to /dev/null.
 ```
 
 Inspect:
 
+Typical SUID binaries include:
+/usr/bin/passwd
+/usr/bin/sudo
+/usr/bin/chsh
+/usr/bin/chfn
+/usr/bin/gpasswd
+/usr/bin/newgrp
+These are programs that must run with elevated privileges (usually root) to modify system files.
+If you see more than these, you should investigate.
+SUID binaries are one of the top vectors for privilege escalation.
+If you see a weird SUID binary like:→ That’s a security red flag.
+
 ```bash
 ls -l /usr/bin/passwd
+
+| Binary | Normal? | Notes |
+| --- | --- | --- |
+| unmount | ✔ | Expected on some distros |
+| su | ✔ | Required for user switching |
+| sudo.ws | ❓ | **Unusual — investigate** |
+| fusermount3 | ✔ | Required for FUSE |
+| pkexec | ✔ | Normal but historically vulnerable |
+| mount | ✔ | Required for mounting |
+| ntfs-3g | ✔ | Required for NTFS mounts |
 ```
 
 Look for:
