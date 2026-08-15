@@ -1306,6 +1306,8 @@ ls -ld /tmp
 ---
 
 # Lab 18 — ACL Basics
+- ACL = Access Control List.
+- ACLs allow you to give specific permissions to specific users or groups on a file or directory.
 
 ## Objective
 
@@ -1369,8 +1371,15 @@ the `+` means an extended ACL exists.
 
 ---
 
-# Lab 19 — ACL Mask
+# Lab 19 — ACL Mask - The Hidden Permission Gatekeeper
+- The ACL mask defines the maximum permissions allowed for:
+- 1. named users (ACL entries like user:nabil:rwx)
+- 2. named groups (ACL entries like group:qa:rwx)
+- 3. the owning group
 
+- If mask = r-x, then even if ACL says: user:nabil:rwx
+- Nabil will only get: r-x
+ 
 Create:
 
 ```bash
