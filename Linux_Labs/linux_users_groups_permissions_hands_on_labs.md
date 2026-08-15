@@ -1191,7 +1191,13 @@ Do not randomly remove SUID from system binaries.
 ---
 
 # Lab 16 — SGID
-
+- All new files created inside inherit the directory’s group, not the user’s primary group.
+- This is essential for shared project directories.
+- User A creates a file → group = userA’s group, User B cannot edit it, You get “permission denied” errors.
+- All files inherit group
+- Everyone in group can work smoothly
+- No ownership conflicts
+- No permission headaches
 ## Objective
 
 Use SGID for shared directories.
